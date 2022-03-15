@@ -21,27 +21,6 @@ func main() {
 	userRepository := user.NewRepository(db)
 	userService := user.NewService(userRepository)
 
-	// userByEmail, err := userRepository.FindByEmail("jsonResponse@gmail.com")
-	// if err != nil {
-	// 	fmt.Println(err.Error())
-	// }
-	// fmt.Println(userByEmail.Name)
-	// if (userByEmail.ID == 0) {
-	// 	fmt.Println("User tidak ditemukan")
-	// } else {
-	// 	fmt.Println(userByEmail.Name)
-	// }
-	// input := user.LoginInput {
-	// 	Email: "jsonResponse@gmail.com",
-	// 	Password: "password",
-	// }
-	// user, err := userService.Login(input)
-	// if err != nil {
-	// 	fmt.Println("Terjadi kesalahan")
-	// 	fmt.Println(err.Error())
-	// }
-	// fmt.Println(user.Email)
-	// fmt.Println(user.Name)
 
 	userHandler := handler.NewUserHandler(userService)
 
@@ -52,12 +31,7 @@ func main() {
 	api.POST("/users", userHandler.RegisterUser)
 	api.POST("/sessions", userHandler.Login)
 	api.POST("/email_checker", userHandler.CheckEmailAvailability)
-
+	api.POST("/avatars", userHandler.UploadAvatar)
+	// cek
 	router.Run()
-
-	// input dari user
-	// handler mapping input dari user -> ke struct
-	// service mapping dari struct input ke User
-	// repository save struct User to db
-	// db
 }
