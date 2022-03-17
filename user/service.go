@@ -86,10 +86,10 @@ func (s *service) SaveAvatar(ID int, fileLocation string) (User, error){
 
 	user.AvatarFileName = fileLocation
 
-	updateUser, err := s.repository.Update(user)
+	updatedUser, err := s.repository.Update(user)
 	if err !=nil {
-		return updateUser, err
+		return updatedUser, err
 	}
 
-	return updateUser, nil
+	return updatedUser, nil
 }

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"startup-api/helper"
 	"startup-api/user"
@@ -119,42 +120,42 @@ func (h *userHandler) CheckEmailAvailability(c *gin.Context) {
 	}
 	response := helper.APIResponse(metaMessage, http.StatusOK, "success", data)
 	c.JSON(http.StatusUnprocessableEntity, response)
-
-
 }
 
 func (h *userHandler) UploadAvatar(c *gin.Context) {
 	file, err := c.FormFile("avatar")
 	if err != nil {
-		data := gin.H{"is_upload":false}
-		response := helper.APIResponse("Failed to upload avatar image", http.StatusBadRequest, "error", data)
+		data := gin.H{"is_uploaded": false}
+		response := helper.APIResponse("Failed to upload avatar image1", http.StatusBadRequest, "error", data)
 	
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
-	path := "images/" + file.Filename
+	// harusnya dapat dari jwt
+	userID := 1
+
+	path := fmt.Sprintf("images/%d-%s", userID, file.Filename)
 	err = c.SaveUploadedFile(file, path)
 	if err != nil {
-		data := gin.H{"is_upload":false}
-		response := helper.APIResponse("Failed to upload avatar image", http.StatusBadRequest, "error", data)
+		data := gin.H{"is_uploaded": false}
+		response := helper.APIResponse("Failed to upload avatar image2", http.StatusBadRequest, "error", data)
 	
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
-	// harusnya dapat dari jwt
-	userID := 2
+	
 	_, err = h.userService.SaveAvatar(userID, path)
 	if err != nil {
-		data := gin.H{"is_upload": false}
-		response := helper.APIResponse("Failed to upload avatar image", http.StatusBadRequest, "error", data)
+		data := gin.H{"is_uploaded": false}
+		response := helper.APIResponse("Failed to upload avatar image3", http.StatusBadRequest, "error", data)
 	
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
-		data := gin.H{"is_upload": true}
-		response := helper.APIResponse("Avatar succesfuly uploaded", http.StatusOK, "success", data)
+	data := gin.H{"is_uploaded": true}
+	response := helper.APIResponse("Avatar succesfuly uploaded", http.StatusOK, "success", data)
 	
-		c.JSON(http.StatusOK, response)
+	c.JSON(http.StatusOK, response)
 }
