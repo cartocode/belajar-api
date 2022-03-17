@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"net/http"
+	"startup-api/auth"
 	"startup-api/helper"
 	"startup-api/user"
 
@@ -11,10 +12,11 @@ import (
 
 type userHandler struct {
 	userService user.Service
+	authService auth.Service
 }
 
-func NewUserHandler(userService user.Service) *userHandler {
-	return &userHandler{userService}
+func NewUserHandler(userService user.Service, authService auth.Service) *userHandler {
+	return &userHandler{userService, authService}
 }
 
 func (h *userHandler) RegisterUser(c *gin.Context) {
@@ -41,8 +43,14 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
+	token, err := h.authService.GenerateToken(newUser.ID)
+		if err != nil {
+		response := helper.APIResponse("Register account failed", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
 
-	formatter := user.FormatUser(newUser, "tokentokentoken")
+	formatter := user.FormatUser(newUser, token)
 	jsonResponse := helper.APIResponse("Account has been registered", http.StatusOK, "success", formatter)
 	// c.JSON(http.StatusOK, nil)
 	c.JSON(http.StatusOK, jsonResponse)
@@ -76,8 +84,14 @@ func (h *userHandler) Login(c *gin.Context) {
 		c.JSON(http.StatusUnprocessableEntity, response)
 		return
 	}
+	token, err := h.authService.GenerateToken(loggedinUser.ID)
+		if err != nil {
+		response := helper.APIResponse("Login Failed", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
 
-	formatter := user.FormatUser(loggedinUser, "tokentokentoken")
+	formatter := user.FormatUser(loggedinUser, token)
 
 	response := helper.APIResponse("Successfuly loggedin", http.StatusOK, "success", formatter)
 
@@ -126,6 +140,7 @@ func (h *userHandler) UploadAvatar(c *gin.Context) {
 	file, err := c.FormFile("avatar")
 	if err != nil {
 		data := gin.H{"is_uploaded": false}
+		// data := gin.H{"error":err.Error()}
 		response := helper.APIResponse("Failed to upload avatar image1", http.StatusBadRequest, "error", data)
 	
 		c.JSON(http.StatusBadRequest, response)
