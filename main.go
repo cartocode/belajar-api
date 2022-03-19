@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"startup-api/auth"
 	"startup-api/handler"
@@ -24,22 +23,7 @@ func main() {
 	userService := user.NewService(userRepository)
 	authService := auth.NewService()
 
-	token, err := authService.ValidateToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxOX0.C_wEgyHI1TsffpM9xRpIt9sxh5j6lRgp5pAA_NRp2Ms")
-	if err !=nil {
-		fmt.Println("error") 
-		fmt.Println("error") 
-		fmt.Println("error") 
-	}
-
-	if token.Valid {
-		fmt.Println("VALID")
-		fmt.Println("VALID")
-		fmt.Println("VALID")
-	}else {
-		fmt.Println("INVALID")
-		fmt.Println("INVALID")
-		fmt.Println("INVALID")
-	}
+	
 	userHandler := handler.NewUserHandler(userService, authService)
 
 	router := gin.Default()
@@ -53,3 +37,9 @@ func main() {
 	// cek
 	router.Run()
 }
+// ambil nilai header Authorization Bearer token
+// dari header authorization, kita ambil nilai tokennya saja
+// kita validasi token
+// kita ambil user_id
+// ambil user dari db berdasarkan user_id lewat service
+// kita set context isinya
