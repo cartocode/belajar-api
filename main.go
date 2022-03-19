@@ -2,9 +2,12 @@ package main
 
 import (
 	"log"
+	"net/http"
 	"startup-api/auth"
 	"startup-api/handler"
+	"startup-api/helper"
 	"startup-api/user"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
@@ -37,6 +40,17 @@ func main() {
 	// cek
 	router.Run()
 }
+
+func authMiddleware(c *gin.Context) {
+	authHeader := c.GetHeader("Authorization")
+
+	if !strings.Contains(authHeader, "Bearer") {
+		response := helper.APIResponse("Unauthorized", http.StatusUnauthorized, "error", nil)
+		c.AbortWithStatusJSON(http.StatusUnauthorized, response)
+		return
+	}
+}
+
 // ambil nilai header Authorization Bearer token
 // dari header authorization, kita ambil nilai tokennya saja
 // kita validasi token
